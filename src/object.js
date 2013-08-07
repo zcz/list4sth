@@ -58,8 +58,9 @@ exports.hash = hash;
 function test() {
   var blob = newObject( "BLOB" );
   var tree = newObject( "TREE" );
+  var mark = newObject( "MARK" );
   var link = newObject( "LINK" );
-  console.log( hash(blob), hash(tree), hash(link));
+  console.log( hash(blob), hash(tree), hash(mark), hash(link));
   var other = newObject( "OTHER_ERROR" );
 }
-//test();
+test();
