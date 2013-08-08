@@ -9,7 +9,9 @@ function start( port, route, handle ) {
 
     route( handle, pathname, request, response ); 
   }
-  http.createServer(onRequest).listen( port );
+  //http.createServer(onRequest).listen( port );
+  //test on cloud9
+  http.createServer(onRequest).listen( process.env.PORT, process.env.IP );
   console.log(new Date(), "server started at port", port );
 }
 
