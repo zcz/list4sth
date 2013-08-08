@@ -10,6 +10,9 @@ var objectInfo = {
     var that = {};
     that.type = "BLOB";
     that.text = "";
+    that.setText = function( text ) {
+        that.text = text;
+    };
     return that;
   },
   TREE : function() {
@@ -24,6 +27,7 @@ var objectInfo = {
     var that = {};
     that.type = "MARK";
     that.set = {};
+    return that;
   },
   LINK : function() {
     var that = {};
@@ -55,6 +59,8 @@ function hash( object ) {
 exports.newObject = newObject;
 exports.hash = hash;
 
+// ------------------------ test ----------------------------
+
 function test() {
   var blob = newObject( "BLOB" );
   var tree = newObject( "TREE" );
@@ -62,5 +68,5 @@ function test() {
   var link = newObject( "LINK" );
   console.log( hash(blob), hash(tree), hash(mark), hash(link));
   var other = newObject( "OTHER_ERROR" );
-}
-test();
+};
+//test();
