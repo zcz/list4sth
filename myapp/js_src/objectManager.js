@@ -45,6 +45,14 @@ function getObjectShallow( hash, callback ) {
     });
 }
 
+function removeObject( hash, numberList ) {
+    var k = parseInt( numberList.shift() );
+    if (typeof k !== "number" || k.isNaN()) {
+        return null;
+    }
+    
+}
+
 exports.getObjectShallow = getObjectShallow;
 exports.addObjToObj = addObjToObj;
 

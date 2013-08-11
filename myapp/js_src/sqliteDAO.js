@@ -52,7 +52,6 @@ function getObjectByHash(id, callback) {
 exports.insertObject = insertObject;
 exports.getObjectByHash = getObjectByHash;
 
-
 // ------------------------ test ----------------------------
 
 function test() {
@@ -64,7 +63,7 @@ function test() {
         console.log("finished insert into db")
     });
     
-    var id = objects.hash(o);
+    var id = o.hash();
     getObjectByHash(id, function(row) {
         console.log("call back function, load object", row, "type", row.type)
     });

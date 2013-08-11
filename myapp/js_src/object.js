@@ -56,6 +56,13 @@ var objectInfo = {
             that.list.splice(pos, 1);
             return save(that);
         };
+        that.getKth = function( pos ) {
+            return that.list[pos];
+        };
+        that.listReplace = function( pos, hash ) {
+            that.list[pos] = hash;
+            return save(that);
+        }
         return save(that);
     },
     MARK: function(that) { // mark can be used in todo list

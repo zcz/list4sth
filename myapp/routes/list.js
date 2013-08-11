@@ -35,10 +35,28 @@ function getJSON( req, res ) {
 function removeJSON( req, res ) {
     var uri = req.params[0];
     var arr = uri.split(/_/);
+    var origin = uri.split(/_/);
+    var last = arr.length - 1;
     if (arr.length === 1 || arr.length === 0) {
-        res.redirect("/"+manager.addObjToObj().hash());
+        res.redirect("/"+"24c64397de58751168bda5e769f9343ee255a9cf");  //empty tree
+    } else {
+        (function findAll( arr, idx ) {
+            manager.getObjectShallow( arr[idx], function( obj ) {
+                arr[idx] = obj;
+                if (idx < last) {
+                    var id = obj.getKth( arr[idx+1] );
+                    arr[idx+1] = id;
+                    findAll( arr, idx+1 );
+                }  else {
+                    var tmp = arr[last-1].removeFromList(origin[last]);
+                    for (var i = last-2; i>=0; --i) {
+                        tmp = arr[i].listReplace(origin[i+1], tmp.hash());                        
+                    }
+                    res.redirect("/"+tmp.hash());
+                }
+            });
+        } )(arr, 0);
     }
-    res.send( arr.join("END<br>") );
 }
 
 exports.showObject = showObject; 

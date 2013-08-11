@@ -9,17 +9,16 @@ $(function() {
             if (data.type === "BLOB") {
                 holder.find("#"+id).html( prepareElement(data.text, "remove/"+id) );
             } else {
-                holder.find("#"+id).html( prepareElement(id, "remove/"+id) );
+                holder.find("#"+id).html( prepareElement(hash, "remove/"+id) );
                 if (data.list.length > 0) {
                     var idd = "";
                     var i = 0;
                     for ( i = 0; i < data.list.length; ++i) {
-                        idd = id + "_" + i;
+                        idd = prepareChildId(id, i);
                         holder.find("#"+id).append("<ul><li id=" + idd +" hash=" + data.list[i]+ "></li></ul>");
-                        //expand(holder.find("ul"), idd);
                     };
                     for ( i = 0; i < data.list.length; ++i) {
-                        idd = id + "_" + i;
+                        idd = prepareChildId(id, i);
                         expand(holder.find("ul"), idd);
                     }
                 }
@@ -35,6 +34,10 @@ $(function() {
                 "</span>"+    
             "</div>";
         return s;
+    }
+    
+    function prepareChildId( id, i ) {
+        return id + "_" + i;
     }
 });
 
