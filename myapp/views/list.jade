@@ -1,0 +1,18 @@
+extends layout
+
+block content
+  h1 #{listHash} [#{listType}]
+  
+  form
+    input(name="begin", type='text', size="60")
+  
+  div(id="expList") 
+      ul
+        li(id= listHash ) 
+
+  form 
+    input(name="end", type='text', size="60")
+    
+  
+  
+  
