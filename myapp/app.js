@@ -33,6 +33,9 @@ app.get('/', routes.index);
 //app.all('/api/*', api);
 app.get(/^\/([a-f0-9]{40})$/, list.showObject);
 app.get(/^\/JSON\/([a-f0-9]{40})$/, list.getJSON);
+//app.get(/^\/remove\/([a-f0-9]{40})([a-f0-9_]*)$/, list.removeJSON );
+app.get("/remove/*", list.removeJSON );
+
 
 http.createServer(app).listen(app.get('port'), function(){
   console.log('Express server listening on port ' + app.get('port'));

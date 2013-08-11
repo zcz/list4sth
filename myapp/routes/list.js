@@ -32,5 +32,15 @@ function getJSON( req, res ) {
     });
 }
 
+function removeJSON( req, res ) {
+    var uri = req.params[0];
+    var arr = uri.split(/_/);
+    if (arr.length === 1 || arr.length === 0) {
+        res.redirect("/"+manager.addObjToObj().hash());
+    }
+    res.send( arr.join("END<br>") );
+}
+
 exports.showObject = showObject; 
 exports.getJSON = getJSON;
+exports.removeJSON = removeJSON;

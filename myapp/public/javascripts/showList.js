@@ -1,26 +1,41 @@
 $(function() {
 
-    var id = $("#expList").find("ul li").attr("id");
+    var id = $("#expList").find("ul li").attr("hash");
     expand($("#expList").find("ul"), id);
     
     function expand( holder, id) {
-        //console.log("load:"+id);
-        $.get('JSON/'+id, function(data) {
+        var hash = holder.find("#"+id).attr("hash");
+        $.get('JSON/'+hash, function(data) {
             if (data.type === "BLOB") {
-                holder.find("#"+id).html(data.text);
+                holder.find("#"+id).html( prepareElement(data.text, "remove/"+id) );
             } else {
-                holder.find("#"+id).html(id);
+                holder.find("#"+id).html( prepareElement(id, "remove/"+id) );
                 if (data.list.length > 0) {
-                    for (var i = 0; i < data.list.length; ++i) {
-                        var idd = data.list[i];
-                        holder.find("#"+id).append("<ul><li id=" + idd +"></li></ul>");
+                    var idd = "";
+                    var i = 0;
+                    for ( i = 0; i < data.list.length; ++i) {
+                        idd = id + "_" + i;
+                        holder.find("#"+id).append("<ul><li id=" + idd +" hash=" + data.list[i]+ "></li></ul>");
+                        //expand(holder.find("ul"), idd);
+                    };
+                    for ( i = 0; i < data.list.length; ++i) {
+                        idd = id + "_" + i;
                         expand(holder.find("ul"), idd);
-                    }                    
+                    }
                 }
             }
         });
     }
 
+    function prepareElement( text, uri ) {
+        var s = 
+            "<div>"+text+
+                "<span>"+
+                    "<a href='"+uri+"' style='padding-left: 10px;'>remove</a>"+
+                "</span>"+    
+            "</div>";
+        return s;
+    }
 });
 
 var showObject = function(name, object) {

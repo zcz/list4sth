@@ -3,12 +3,12 @@ var dao = require('./sqliteDAO');
 
 function toBLOB( obj ) {
     if (typeof obj === 'undefined') {
-        return baseObj.newObject( "BLOB" );
+        obj = baseObj.newObject( "BLOB" );
     }
     if (typeof obj === 'string') {
         var tmp = baseObj.newObject( "BLOB" );
         tmp.setText(obj);
-        return tmp;
+        obj = tmp;
     }
     if (obj.getType() !== 'BLOB') {
         throw "erro, toBLOB failed: obj=" + JSON.stringify(obj);
@@ -19,11 +19,11 @@ function toBLOB( obj ) {
 
 function toTREE( obj ) {
     if (typeof obj === 'undefined') {
-        return baseObj.newObject( "TREE" );
+        obj = baseObj.newObject( "TREE" );
     }
-    if (typeof obj === 'string') {
-        obj = toBLOB(obj);
-        return addObjToObj( obj, baseObj.newObject("TREE") );
+    if (typeof obj === 'string' || obj.getType() === "BLOB") {
+        obj = toBLOB( obj );
+        obj = addObjToObj( obj, baseObj.newObject("TREE") );
     }
     if (obj.getType() !== 'TREE') {
         throw "erro, toTREE failed: obj=" + JSON.stringify(obj);
@@ -33,9 +33,7 @@ function toTREE( obj ) {
 }
 
 function addObjToObj( add, to, pos ) {
-    if (add.getType !== "TREE") {
-        add = toBLOB( add );
-    }
+    add = toBLOB( add );
     to = toTREE( to );
     return to.addToList( add, pos );
 }
