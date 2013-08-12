@@ -4,11 +4,10 @@
  */
 
 var express = require('express')
-  , routes = require('./routes')
-  , user = require('./routes/user')
   , http = require('http')
   , path = require('path')
-  , list = require("./routes/list");
+  , object = require("./routes/object")
+  , link = require('./routes/link');
 
 var app = express();
 
@@ -23,19 +22,21 @@ app.use(express.methodOverride());
 app.use(app.router);
 app.use(express.static(path.join(__dirname, 'public')));
 
+//app.use(function(err, req, res, next){  // error handle
+//  console.error(err.stack);
+//  res.send(500, 'Something broke!');
+//});
+
 // development only
 if ('development' == app.get('env')) {
   app.use(express.errorHandler());
 }
 
-app.get('/', routes.index);
-//app.get('/users', user.list);
-//app.all('/api/*', api);
-app.get(/^\/([a-f0-9]{40})$/, list.showObject);
-app.get(/^\/JSON\/([a-f0-9]{40})$/, list.getJSON);
-//app.get(/^\/remove\/([a-f0-9]{40})([a-f0-9_]*)$/, list.removeJSON );
-app.get("/remove/*", list.removeJSON );
+app.get(/^\/([a-zA-Z0-9]{3,39})$/, link.showLink);     //e.g. "/todo"
 
+app.get(/^\/([a-f0-9]{40})$/, object.showObject);     //e.g. /24c64397de58751168bda5e769f9343ee255a9cf
+app.get(/^\/JSON\/([a-f0-9]{40})$/, object.getJSON);  //e.g. /JSON/24c64397de58751168bda5e769f9343ee255a9cf
+app.get("/remove/*", object.removeJSON );             //e.g. /remove/24c64397de58751168bda5e769f9343ee255a9cf_1_2_3
 
 http.createServer(app).listen(app.get('port'), function(){
   console.log('Express server listening on port ' + app.get('port'));

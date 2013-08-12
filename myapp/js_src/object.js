@@ -14,7 +14,7 @@ function save(obj) {
 }
 
 function getBaseObject( that ) {
-    if (that === undefined) {
+    if (that === undefined || that === null) {
         var that = {};
     }
     if (that.type === undefined) that.type = "";
@@ -27,7 +27,6 @@ function getBaseObject( that ) {
     that.getType = function() {
         return that.type;
     };
-
     return that;
 }
 
@@ -62,22 +61,51 @@ var objectInfo = {
         that.listReplace = function( pos, hash ) {
             that.list[pos] = hash;
             return save(that);
-        }
+        };
         return save(that);
     },
+    LINK: function(that) {
+        that.type = "LINK";
+        if (that.name === undefined) that.name = "thisisnotalink"; // the name of the link, like the directory name
+        if (that.target === undefined) that.target = ""; // cat point to object (hard) or link (soft)
+        that.hash = function() {    // rewrite hash function, store name as primary key
+            return that.name;  
+        };
+        that.getName = function() {
+            return that.name;
+        };
+        that.setName = function( name ) {
+            that.name = name;
+            return save(that);
+        };
+        that.getTarget = function() {
+            return that.target;
+        };
+        that.setTarget = function( hash ) {
+            that.target = hash;
+            return save(that);
+        }
+        //if (that.softLink === undefined) that.softLink = false;  // no need at this point
+        //if (that.mark === undefined) that.mark = "";  // a pointer to marks, see the comment in mark type
+        return save(that);
+    },
+/*  not implemented, lock it
     MARK: function(that) { // mark can be used in todo list
         that.type = "MARK";
         if (that.set === undefined) that.set = {};
         return save(that);
     },
-    LINK: function(that) {
-        that.type = "LINK";
-        if (that.name === undefined) that.name = ""; // the name of the link, like the directory name
-        if (that.target === undefined) that.target = ""; // cat point to object (hard) or link (soft)
-        if (that.softLink === undefined) that.softLink = false;
-        if (that.mark === undefined) that.mark = "";  // a pointer to marks, see the comment in mark type
+    USER: function(that) {
+        that.type = "USER";
+        if (that.name === undefined) that.name = "";
+        if (that.links === undefined) that.links = [];
+        that.setName = function( name ) {
+            that.name = name;
+            return save(that);
+        };
         return save(that);
-    },
+    }
+*/
 };
 
 function newObject(type, obj) {
@@ -113,9 +141,8 @@ function testNewObject() {
     console.log( blob.hash(), blob.json() );
     
     var tree = newObject("TREE");
-    var mark = newObject("MARK");
     var link = newObject("LINK");
-    console.log(blob.hash(), tree.hash(), mark.hash(), link.hash());
+    console.log(blob.hash(), tree.hash(), link.hash());
     var other = newObject("OTHER_ERROR");
 }
 function testAddTree() {
@@ -129,5 +156,12 @@ function testAddTree() {
     console.log(b.hash(), c.hash(), d.hash());
     console.log(a.json());
 }
+function testLinkInit() {
+    var link = newObject("LINK");
+    link.setName("testLink");
+    link.setTarget(newObject("TREE").hash());
+    console.log("hash:", link.hash(), "JSON", link.json());
+}
+testLinkInit();
 //testNewObject();
 //testAddTree();

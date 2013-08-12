@@ -18,7 +18,7 @@ function showObject(req, res){
             obj = manager.addObjToObj(addEnd, obj, -1);
             res.redirect('/' + obj.hash());
         }
-        res.render('list', { 
+        res.render('object', { 
             title: 'Show Object',
             listHash : hash,
             listType : obj.getType(),

@@ -45,8 +45,8 @@ function getObjectShallow( hash, callback ) {
     });
 }
 
-function removeObject( hash, numberList ) {
-    var k = parseInt( numberList.shift() );
+function removeObject( tree, numberList ) {
+    var k = parseInt( numberList.shift(), 10 );
     if (typeof k !== "number" || k.isNaN()) {
         return null;
     }
