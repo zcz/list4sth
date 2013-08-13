@@ -62,8 +62,20 @@ function getObjectByHash(id, callback, objIfNull) {
     });
 }
 
+function getAllLink(callback) {
+    db.all("select * from object where LENGTH(hash) < 40", function(err, raws) {
+        for (var i=0; i<raws.length; ++i) {
+            raws[i] = baseObj.wireObject(raws[i].json);   
+        };
+        if (typeof callback === 'function') {
+            callback( raws );
+        }
+    });
+}
+
 exports.insertObject = insertObject;
 exports.getObjectByHash = getObjectByHash;
+exports.getAllLink = getAllLink;
 
 // ------------------------ test ----------------------------
 

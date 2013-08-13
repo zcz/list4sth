@@ -4,6 +4,21 @@
  */
  
 var manager = require('../js_src/objectManager.js');
+var dao = require('../js_src/sqliteDAO');
+
+function showAll( req, res ) {
+    dao.getAllLink( function( objs ) {
+        var a = [];
+        for (var i = 0; i<objs.length; ++i) {
+            a.push(objs[i].getName());
+        };
+        res.render('linkList', { 
+            title: 'Links' + "(" + objs.length + ")",
+            links: a
+        })
+    } );
+};
+
 
 function showLink(req, res){
     var linkName = req.params[0];
@@ -67,3 +82,4 @@ function removeItem( req, res ) {
 
 exports.showLink = showLink;
 exports.removeItem = removeItem;
+exports.showAll = showAll;

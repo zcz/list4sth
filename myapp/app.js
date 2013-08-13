@@ -33,6 +33,7 @@ if ('development' == app.get('env')) {
   app.use(express.errorHandler());
 }
 
+app.get("/", linkController.showAll);
 app.get(/^\/([a-zA-Z0-9]{3,39})$/, linkController.showLink);     //e.g. "/todo"
 app.get("/:linkName/remove/*", linkController.removeItem );    //e.g. /todo/remove/24c64397de58751168bda5e769f9343ee255a9cf_1_2_3
 
