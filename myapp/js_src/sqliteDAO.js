@@ -2,7 +2,8 @@
 //1. object( hash(PK), json ) contains {BLOB, TREE, MARK}
 //2. link( name(PK), json ) contains {LINK} 
 
-var db = initDB("/tmp/test.db");
+var db = initDB("./test.db");
+var baseObj = require('./object');
 
 function initDB(fileLocation) {
     var fs = require("fs");
@@ -27,8 +28,16 @@ function initDB(fileLocation) {
     return db;
 }
 
-function insertObject(object, callback) {
-    db.run("INSERT OR REPLACE INTO object (hash, json) VALUES (?, ?)", object.hash(), object.json(), function(err) {
+function insertObject(object, callback, ifReplace) {
+    ifReplace = typeof ifReplace !== undefined ? ifReplace : false;
+    var query = "";
+    if (ifReplace === true) {
+        query = "INSERT OR REPLACE INTO object (hash, json) VALUES (?, ?)";
+    } else {
+        query = "INSERT OR IGNORE INTO object (hash, json) VALUES (?, ?)"
+    }
+    console.log("save object:" + object.json() + " query : " + query)
+    db.run(query, object.hash(), object.json(), function(err) {
         if (err === null) {
             if (typeof callback === 'function' ) callback();
         }
@@ -38,13 +47,21 @@ function insertObject(object, callback) {
     });
 }
 
-function getObjectByHash(id, callback) {
+function getObjectByHash(id, callback, objIfNull) {
     db.get("SELECT * FROM object WHERE hash=?", id, function(err, raw) {
+        var obj = undefined;
         if (raw !== undefined) {
-            if (typeof callback === 'function') callback( JSON.parse(raw.json) );
+            obj = baseObj.wireObject(raw.json);
+            console.log("load from db: " + obj.json());
         }
-        else {
-            throw "db, getObjectById, err:" + err;
+        if (objIfNull !== undefined && obj === undefined) {
+            obj = objIfNull;
+            console.log("getObjectByHash get nothing, create new: " + obj.json());
+        }
+        if (obj !== undefined) {
+            callback( obj );
+        } else {
+            throw "db, getObjectByHash, err:" + err;            
         }
     });
 }

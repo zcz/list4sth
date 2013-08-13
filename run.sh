@@ -1,2 +1,2 @@
-nohup node ./src/index.js > /tmp/output.log &
+nohup node ./myapp/app.js > ./output.log &
 

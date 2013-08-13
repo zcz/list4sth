@@ -8,8 +8,8 @@ var crypto = require('crypto');
 var storage = require('./sqliteDAO');
 
 // save object when it is generated
-function save(obj) {
-    storage.insertObject(obj);
+function save(obj, ifReplace) {
+    storage.insertObject(obj, null, ifReplace);
     return obj;
 }
 
@@ -67,7 +67,9 @@ var objectInfo = {
     LINK: function(that) {
         that.type = "LINK";
         if (that.name === undefined) that.name = "thisisnotalink"; // the name of the link, like the directory name
-        if (that.target === undefined) that.target = ""; // cat point to object (hard) or link (soft)
+        if (that.target === undefined) {
+            that.target = newObject("TREE").hash();
+        }
         that.hash = function() {    // rewrite hash function, store name as primary key
             return that.name;  
         };
@@ -83,7 +85,7 @@ var objectInfo = {
         };
         that.setTarget = function( hash ) {
             that.target = hash;
-            return save(that);
+            return save(that, true);
         }
         //if (that.softLink === undefined) that.softLink = false;  // no need at this point
         //if (that.mark === undefined) that.mark = "";  // a pointer to marks, see the comment in mark type
@@ -127,6 +129,9 @@ function hash(object) {
 }
 
 function wireObject( obj ){
+    if (typeof obj === "string") {
+        obj = JSON.parse(obj);
+    }
     return( newObject(obj.type, obj) );
 }
 
@@ -162,6 +167,6 @@ function testLinkInit() {
     link.setTarget(newObject("TREE").hash());
     console.log("hash:", link.hash(), "JSON", link.json());
 }
-testLinkInit();
+//testLinkInit();
 //testNewObject();
 //testAddTree();

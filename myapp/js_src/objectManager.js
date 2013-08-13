@@ -40,7 +40,6 @@ function addObjToObj( add, to, pos ) {
 
 function getObjectShallow( hash, callback ) {
     return dao.getObjectByHash(hash, function(obj) {
-        obj = baseObj.wireObject( obj );
         callback(obj);
     });
 }
@@ -50,11 +49,20 @@ function removeObject( tree, numberList ) {
     if (typeof k !== "number" || k.isNaN()) {
         return null;
     }
-    
+}
+
+function loadOrCreateLink(linkName, callback) {
+    var link = baseObj.newObject("LINK");
+    link.setName( linkName );
+    dao.getObjectByHash(linkName, function(obj) {
+        //console.log("load link finish: " + obj.json());
+        callback(obj);
+    }, link);
 }
 
 exports.getObjectShallow = getObjectShallow;
 exports.addObjToObj = addObjToObj;
+exports.loadOrCreateLink = loadOrCreateLink;
 
 function test() {
     var obj = addObjToObj("hello", "world");

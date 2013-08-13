@@ -1,13 +1,13 @@
 extends layout
 
 block content
-  script(src='/javascripts/showList.js')
-  h1 #{listHash} [#{listType}]
+  script(src='/javascripts/ui_showList.js')
+  h1 #{title} 
   
   form
     input(name="begin", type='text', size="60")
   
-  div(id="expList") 
+  div(id="expList", linkName= linkName) 
       ul
         li(hash= listHash, id= listHash ) 
 
