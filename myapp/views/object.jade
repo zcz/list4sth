@@ -1,8 +1,12 @@
 extends layout
 
+mixin link(href, name)
+  a(class=attributes.class, href=href)= name
+  
 block content
   script(src='/javascripts/ui_showList.js')
   h1 #{title} 
+    +link(linkName+"/remove/", "remove" )
   
   form
     input(name="begin", type='text', size="60")

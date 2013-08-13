@@ -6,7 +6,7 @@ mixin link(href, name)
 block content
   h1 #{title} 
   
-  - for (var i = 0; i<links.length; ++i)
+  - for (var i = links.length-1; i>=0; --i)
     br
     div 
         +link(links[i], links[i]) 

@@ -62,6 +62,11 @@ function getObjectByHash(id, callback, objIfNull) {
     });
 }
 
+function removeObject( obj, callback ) {
+    var s = "delete from object where hash=?";
+    db.run( s, obj.hash(), callback );
+}
+
 function getAllLink(callback) {
     db.all("select * from object where LENGTH(hash) < 40", function(err, raws) {
         for (var i=0; i<raws.length; ++i) {
@@ -76,6 +81,7 @@ function getAllLink(callback) {
 exports.insertObject = insertObject;
 exports.getObjectByHash = getObjectByHash;
 exports.getAllLink = getAllLink;
+exports.removeObject = removeObject;
 
 // ------------------------ test ----------------------------
 
@@ -93,4 +99,16 @@ function test() {
         console.log("call back function, load object", row, "type", row.type)
     });
 }
+function testRemove() {
+    var objects = require("./object.js");
+    var link = objects.newObject("LINK");
+    link.setName("testRemove");
+    removeObject( link );
+    removeObject( link, function() {
+        getObjectByHash("testRemove", function( obj ) {
+            console.log( "obj:" + obj.json());
+        });
+    });
+}
+//testRemove();
 //test();

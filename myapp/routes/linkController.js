@@ -55,9 +55,8 @@ function removeItem( req, res ) {
     var last = arr.length - 1;
     manager.loadOrCreateLink(linkName, function(link) {        
         if (arr.length === 1 || arr.length === 0) {
-            link.setTarget("24c64397de58751168bda5e769f9343ee255a9cf");
-            res.redirect("/"+linkName);
-            //res.redirect("/"+"24c64397de58751168bda5e769f9343ee255a9cf");  //empty tree
+            dao.removeObject( link );
+            res.redirect("/");
         } else {
             (function findAll( arr, idx ) {
                 manager.getObjectShallow( arr[idx], function( obj ) {

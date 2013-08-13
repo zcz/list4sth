@@ -66,7 +66,7 @@ var objectInfo = {
     },
     LINK: function(that) {
         that.type = "LINK";
-        if (that.name === undefined) that.name = "thisisnotalink"; // the name of the link, like the directory name
+        if (that.name === undefined) that.name = "thisisnotalink24c64397de58751168bda5e769f9343ee255a9cf"; // the name of the link, like the directory name
         if (that.target === undefined) {
             that.target = newObject("TREE").hash();
         }
