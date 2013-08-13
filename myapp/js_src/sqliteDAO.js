@@ -16,15 +16,14 @@ function initDB(fileLocation) {
     var db = new sqlite3.Database(fileLocation);
 
     db.run("CREATE TABLE IF NOT EXISTS object (hash TEXT PRIMARY KEY, json TEXT)",
-
-    function(err) {
-        console.log('create table "object", err', err);
-    });
+        function(err) {
+            console.log('create table "object", err', err);
+        });
+        
     db.run("CREATE TABLE IF NOT EXISTS link (name TEXT PRIMARY KEY, json TEXT)",
-
-    function(err) {
-        console.log('create table "link", err', err);
-    });
+        function(err) {
+            console.log('create table "link", err', err);
+        });
     return db;
 }
 
@@ -34,9 +33,8 @@ function insertObject(object, callback, ifReplace) {
     if (ifReplace === true) {
         query = "INSERT OR REPLACE INTO object (hash, json) VALUES (?, ?)";
     } else {
-        query = "INSERT OR IGNORE INTO object (hash, json) VALUES (?, ?)"
+        query = "INSERT OR IGNORE INTO object (hash, json) VALUES (?, ?)";
     }
-    console.log("save object:" + object.json() + " query : " + query)
     db.run(query, object.hash(), object.json(), function(err) {
         if (err === null) {
             if (typeof callback === 'function' ) callback();
@@ -52,11 +50,9 @@ function getObjectByHash(id, callback, objIfNull) {
         var obj = undefined;
         if (raw !== undefined) {
             obj = baseObj.wireObject(raw.json);
-            console.log("load from db: " + obj.json());
         }
         if (objIfNull !== undefined && obj === undefined) {
             obj = objIfNull;
-            console.log("getObjectByHash get nothing, create new: " + obj.json());
         }
         if (obj !== undefined) {
             callback( obj );

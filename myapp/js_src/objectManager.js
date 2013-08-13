@@ -55,7 +55,6 @@ function loadOrCreateLink(linkName, callback) {
     var link = baseObj.newObject("LINK");
     link.setName( linkName );
     dao.getObjectByHash(linkName, function(obj) {
-        //console.log("load link finish: " + obj.json());
         callback(obj);
     }, link);
 }
