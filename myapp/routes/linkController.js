@@ -74,7 +74,7 @@ function removeItem( req, res ) {
 function appendItem(req, res) {
     var linkName = req.params.linkName;
     var uri = req.params[0];
-    var text = req.query.append; 
+    var text = req.query.text; 
     findThroughPath( linkName, uri, function(arr, origin, link) {
         var last = arr.length -1;
         var tmp = manager.addObjToObj(text, arr[last-1], parseInt(origin[last], 10) + 1);        
@@ -86,12 +86,13 @@ function appendItem(req, res) {
     });
 }
 
-function subtreeItem(req, res) {
+function insertItem(req, res) {
     var linkName = req.params.linkName;
     var uri = req.params[0];
+    var text = req.query.text; 
     findThroughPath( linkName, uri, function(arr, origin, link) {
         var last = arr.length -1;
-        var tmp = manager.addObjToObj(arr[last], undefined, 0);        
+        var tmp = manager.addObjToObj(text, arr[last], 0);        
         for (var i = last-1; i>=0; --i) {
             tmp = arr[i].listReplace(origin[i+1], tmp.hash());                        
         }
@@ -99,6 +100,22 @@ function subtreeItem(req, res) {
         res.redirect("/"+linkName);
     });    
 };
+
+function editItem( req, res ) {
+    console.log( "editItem called" );
+    var linkName = req.params.linkName;
+    var uri = req.params[0];
+    var text = req.query.text; 
+    findThroughPath( linkName, uri, function(arr, origin, link) {
+        var last = arr.length - 1;
+        var tmp = arr[last].setText( text );        
+        for (var i = last-1; i>=0; --i) {
+            tmp = arr[i].listReplace(origin[i+1], tmp.hash());                        
+        }
+        link.setTarget( tmp.hash() );
+        res.redirect("/"+linkName);
+    });    
+}
 
 function findThroughPath( linkName, uri, callback ){
     var arr = uri.split(/_/);
@@ -126,4 +143,6 @@ exports.showLink = showLink;
 exports.removeItem = removeItem;
 exports.showAll = showAll;
 exports.appendItem = appendItem;
-exports.subtreeItem = subtreeItem;
+exports.insertItem = insertItem;
+exports.editItem = editItem;
+

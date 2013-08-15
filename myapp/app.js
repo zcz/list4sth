@@ -40,7 +40,8 @@ app.get("/", linkController.showAll);
 app.get(/^\/([a-zA-Z0-9]{3,39})$/, linkController.showLink);     //e.g. "/todo"
 app.get("/:linkName/remove/*", linkController.removeItem );    //e.g. /todo/remove/24c64397de58751168bda5e769f9343ee255a9cf_1_2_3
 app.get("/:linkName/append/*", linkController.appendItem );    //e.g. /todo/append/24c64397de58751168bda5e769f9343ee255a9cf_1_2_3
-app.get("/:linkName/subtree/*", linkController.subtreeItem );    //e.g. /todo/subtree/24c64397de58751168bda5e769f9343ee255a9cf_1_2_3
+app.get("/:linkName/insert/*", linkController.insertItem );    //e.g. /todo/subtree/24c64397de58751168bda5e769f9343ee255a9cf_1_2_3
+app.get("/:linkName/edit/*", linkController.editItem );    //e.g. /todo/edit/24c64397de58751168bda5e769f9343ee255a9cf_1_2_3
 
 app.get(/^\/([a-f0-9]{40})$/, objectController.showObject);     //e.g. /24c64397de58751168bda5e769f9343ee255a9cf
 app.get(/^\/JSON\/([a-f0-9]{40})$/, objectController.getJSON);  //e.g. /JSON/24c64397de58751168bda5e769f9343ee255a9cf

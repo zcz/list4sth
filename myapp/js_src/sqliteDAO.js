@@ -1,6 +1,6 @@
 // sqlite database implementation, contain following tables
-//1. object( hash(PK), json ) contains {BLOB, TREE, MARK}
-//2. link( name(PK), json ) contains {LINK} 
+//1. object( hash(PK), json ) contains {TREE, MARK}
+//2. object( name(PK), json ) contains {LINK}
 
 var db = initDB("./test.db");
 var baseObj = require('./object');
@@ -87,7 +87,7 @@ exports.removeObject = removeObject;
 
 function test() {
     var objects = require("./object.js");
-    var o = objects.newObject("BLOB");
+    var o = objects.newObject("TEXT");
     o.setText("hello world");
     
     insertObject(o, function() {

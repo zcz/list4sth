@@ -1,41 +1,24 @@
 var baseObj = require('./object');
 var dao = require('./sqliteDAO');
 
-function toObject( obj ) {
-    if (typeof obj === 'undefined') {
-        obj = baseObj.newObject( "BLOB" );
-    }
-    if (typeof obj === 'string') {
-        var tmp = baseObj.newObject( "BLOB" );
-        tmp.setText(obj);
-        obj = tmp;
-    }
-    if (obj.getType !== undefined) {
-        return obj;
-    } else {
-        throw "erro, toBLOB failed: obj=" + JSON.stringify(obj);
-    }
-}
 
+// function only accept string and TREE object
 function toTREE( obj ) {
-    if (typeof obj === 'undefined') {
-        obj = baseObj.newObject( "TREE" );
+    if (typeof obj === 'string') {  // turn string to tree
+        var tmp = baseObj.newObject( "TREE" );
+        tmp.setText( obj );
+        return tmp;
     }
-    if (typeof obj === 'string' || obj.getType() === "BLOB") {
-        obj = toObject( obj );
-        obj = addObjToObj( obj, baseObj.newObject("TREE") );
-    }
-    if (obj.getType() !== 'TREE') {
-        throw "erro, toTREE failed: obj=" + JSON.stringify(obj);
-    } else {
+    if (obj.getType() === 'TREE') {  
         return obj;
+    } else {
+        throw "erro, toTREE failed: obj=" + JSON.stringify(obj);        
     }
 }
 
 function addObjToObj( add, to, pos ) {
-    add = toObject( add );
+    add = toTREE( add );
     to = toTREE( to );
-    //console.log("append: add:" + add.hash() + " to:"+to.hash() + " pos:" + pos);
     return to.addToList( add, pos );
 }
 
