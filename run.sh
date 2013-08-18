@@ -1,2 +1,2 @@
-nohup node ./myapp/app.js > ./output.log &
+nohup node ./myapp/app.js >> ./output.log &
 
