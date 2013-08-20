@@ -1,13 +1,21 @@
 extends layout
 
 mixin link(href, name)
-  a(class=attributes.class, href=href)= name
+  a(href=href)= name
 
 block content
+  script(type='text/javascript').
+        $(function() {
+            $("form").validate();
+        });
+
   h1 #{title} 
+  
+  form
+    input(name="addLink", type='text', size="60", class="linkname", minlength="3")
   
   - for (var i = links.length-1; i>=0; --i)
     br
     div.linkContainer
-        +link(links[i], links[i]) 
+        +link(links[i].url, links[i].name) 
   

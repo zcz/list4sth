@@ -1,28 +1,32 @@
 $(function() {
 
-    var id = $("#expList").find("ul li").attr("hash");
     var linkName = $("#expList").attr("linkName");
-    expand($("#expList").find("ul"), id);
+    var objectHash = $("#expList").attr("hash");
+    expand($("#expList"), objectHash, objectHash, 0);
     
-    function expand( holder, id) {
-        var hash = holder.find("#"+id).attr("hash");
-        $.get('JSON/'+hash, function(data) {
-            holder.find("#"+id).html( prepareElement(data.text, id, hash) );
-            prepareAppend( holder.find("#"+id).find(".appendLink") );
-            prepareEdit( holder.find("#"+id).find(".editLink") );
-            prepareInsert( holder.find("#"+id).find(".insertLink") );
-            prepareHash( holder.find("#"+id).find(".hashLink"));
+    function expand( holder, id, hash, depth) {
+        //var hash = holder.find("#"+id).attr("hash");
+        $.get('/JSON/'+hash, function(data) {
+            if (depth !== -1) {
+                holder.html( prepareElement(data.text, id, hash) );
+                prepareAppend( holder.find(".appendLink") );
+                prepareEdit( holder.find(".editLink") );
+                prepareInsert( holder.find(".insertLink") );
+                prepareHash( holder.find(".hashLink"));                
+            }
             
             if (data.list.length > 0) {
                 var idd = "";
                 var i = 0;
+                holder.append("<ul></ul>");
+                holder = holder.find("ul");
                 for ( i = 0; i < data.list.length; ++i) {
                     idd = prepareChildId(id, i);
-                    holder.find("#"+id).append("<ul><li id=" + idd +" hash=" + data.list[i]+ "></li></ul>");
+                    holder.append("<li id=" + idd +" hash=" + data.list[i]+ "></li>");
                 };
                 for ( i = 0; i < data.list.length; ++i) {
                     idd = prepareChildId(id, i);
-                    expand(holder.find("ul"), idd);
+                    expand(holder.find("#"+idd), idd, data.list[i], depth+1);
                 }
             }
         });

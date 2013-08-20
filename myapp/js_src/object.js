@@ -6,8 +6,14 @@ var crypto = require('crypto');
 var storage = require('./sqliteDAO');
 
 // save object when it is generated
-function save(obj, ifReplace) {
-    storage.insertObject(obj, null, ifReplace);
+function save(obj) {
+    //console.log("save called: " + obj.getType());
+    if( obj.getType() === "TREE" || obj.getType() === "LINK") {
+        storage.insertObject( obj );
+    }
+    if (obj.getType() === "USER") {
+        storage.saveUser( obj );
+    }
     return obj;
 }
 
@@ -16,6 +22,7 @@ function getBaseObject( that ) {
         var that = {};
     }
     if (that.type === undefined) that.type = "";
+    
     that.hash = function () {
         var s = that.json();
         return crypto.createHash("sha1").update(s).digest('hex');
@@ -30,20 +37,11 @@ function getBaseObject( that ) {
 }
 
 var objectInfo = {
-    // BLOB object is merged into TREE, the field text is also added into TREE element;
-    // BLOB: function(that) {
-    //     that.type = "BLOB";
-    //     if (that.text === undefined) that.text = "";
-    //     that.setText = function(text) {
-    //         that.text = text;
-    //         return save(that);
-    //     };
-    //     return save(that);
-    // },
     TREE: function(that) {
         that.type = "TREE";
         // text element, used to be in BLOB object
         if (that.text === undefined) that.text = that.hash();
+        
         that.setText = function(text) {
             that.text = text;
             return save(that);
@@ -73,47 +71,57 @@ var objectInfo = {
     },
     LINK: function(that) {
         that.type = "LINK";
-        if (that.name === undefined) that.name = "thisisnotalink24c64397de58751168bda5e769f9343ee255a9cf"; // the name of the link, like the directory name
+        if (that.prev === undefined) that.prev = null;
         if (that.target === undefined) {
             that.target = newObject("TREE").hash();
         }
-        that.hash = function() {    // rewrite hash function, store name as primary key
-            return that.name;  
+        
+        that.getPrev = function() {
+            return that.prev;
         };
-        that.getName = function() {
+        that.getTarget = function() {
+            return that.target;
+        };
+        that.setTarget = function( hash ) {
+            that.prev = that.hash();    // for the list history function
+            that.target = hash;
+            return save(that);
+        };
+        //if (that.softLink === undefined) that.softLink = false;  // no need at this point
+        //if (that.mark === undefined) that.mark = "";  // a pointer to marks, see the comment in mark type
+        return save(that);
+    },
+    USER: function( that ) {
+        that.type = "USER";
+        if (that.name === undefined) that.name = "";
+        if (that.links === undefined) that.links = {};
+        
+        that.getName = function( name ) {
             return that.name;
         };
         that.setName = function( name ) {
             that.name = name;
             return save(that);
         };
-        that.getTarget = function() {
-            return that.target;
+        that.setLink = function( name, link ) {
+            that.links[name] = link.hash();
+            return save(that);
         };
-        that.setTarget = function( hash ) {
-            that.target = hash;
-            return save(that, true);
-        }
-        //if (that.softLink === undefined) that.softLink = false;  // no need at this point
-        //if (that.mark === undefined) that.mark = "";  // a pointer to marks, see the comment in mark type
+        that.removeLink = function( name ) {
+            delete that.links[name];
+            return save(that);
+        };
+        that.getLinks = function() {
+            return that.links;
+        };
         return save(that);
-    },
+    }
 /*  not implemented, lock it
     MARK: function(that) { // mark can be used in todo list
         that.type = "MARK";
         if (that.set === undefined) that.set = {};
         return save(that);
     },
-    USER: function(that) {
-        that.type = "USER";
-        if (that.name === undefined) that.name = "";
-        if (that.links === undefined) that.links = [];
-        that.setName = function( name ) {
-            that.name = name;
-            return save(that);
-        };
-        return save(that);
-    }
 */
 };
 

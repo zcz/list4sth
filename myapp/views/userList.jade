@@ -1,0 +1,22 @@
+extends layout
+
+mixin link(href, name)
+  a(href=href)= name
+
+block content
+  script(type='text/javascript').
+        $(function() {
+            $("form").validate();
+            $(".username").inputmask({ "mask": "*", "repeat": 40, "greedy": false });
+        });
+    
+  h1 #{title} 
+  
+  form
+    input(name="addUser", type='text', size="60", class="username", minlength="3")
+  
+  - for (var i = users.length-1; i>=0; --i)
+    br
+    div.linkContainer
+        +link(users[i].url, users[i].name+"("+users[i].count+")") 
+  

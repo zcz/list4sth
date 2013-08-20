@@ -1,38 +1,28 @@
 /*
  * GET list
  */
-
-var manager = require('../js_src/objectManager.js');
+var dao = require('../js_src/sqliteDAO');
 
 function showObject(req, res){
     var hash = req.params[0];  
-    var addBegin = req.query.begin;
-    var addEnd = req.query.end;
 
-    manager.getObjectShallow(hash,  function(obj) {
-        if (addBegin !== undefined) {
-            obj = manager.addObjToObj(addBegin, obj, 0);            
-            res.redirect('/' + obj.hash());
-        }
-        if (addEnd !== undefined) {
-            obj = manager.addObjToObj(addEnd, obj, -1);
-            res.redirect('/' + obj.hash());
-        }
+    dao.getObjectByHash(hash,  function(obj) {
         res.render('object', { 
             title: 'Show Object',
             listHash : hash,
             listType : obj.getType(),
             linkName : ".",
         }) } );
-};
+}
 
 function getJSON( req, res ) {
     var hash = req.params[0];  
-    manager.getObjectShallow(hash,  function(obj) {
+    dao.getObjectByHash(hash,  function(obj) {
         res.json( obj ); 
     });
 }
 
+/*
 function removeJSON( req, res ) {
     var uri = req.params[0];
     var arr = uri.split(/_/);
@@ -59,7 +49,7 @@ function removeJSON( req, res ) {
         } )(arr, 0);
     }
 }
+*/
 
 exports.showObject = showObject; 
 exports.getJSON = getJSON;
-exports.removeJSON = removeJSON;

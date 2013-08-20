@@ -1,3 +1,5 @@
+// used to combine the object definition: object.js with DAO
+
 var baseObj = require('./object');
 var dao = require('./sqliteDAO');
 
@@ -12,7 +14,7 @@ function toTREE( obj ) {
     if (obj.getType() === 'TREE') {  
         return obj;
     } else {
-        throw "erro, toTREE failed: obj=" + JSON.stringify(obj);        
+        throw "erro, toTREE failed: obj=" + JSON.stringify(obj);
     }
 }
 
@@ -22,42 +24,23 @@ function addObjToObj( add, to, pos ) {
     return to.addToList( add, pos );
 }
 
+/*
 function getObjectShallow( hash, callback ) {
     return dao.getObjectByHash(hash, function(obj) {
         callback(obj);
     });
 }
+*/
 
+/*
 function removeObject( tree, numberList ) {
     var k = parseInt( numberList.shift(), 10 );
     if (typeof k !== "number" || k.isNaN()) {
         return null;
     }
 }
+*/
 
-function loadOrCreateLink(linkName, callback) {
-    var link = baseObj.newObject("LINK");
-    link.setName( linkName );
-    dao.getObjectByHash(linkName, function(obj) {
-        callback(obj);
-    }, link);
-}
-
-exports.getObjectShallow = getObjectShallow;
+//exports.getObjectShallow = getObjectShallow;
 exports.addObjToObj = addObjToObj;
-exports.loadOrCreateLink = loadOrCreateLink;
-
-function test() {
-    var obj = addObjToObj("hello", "world");
-    console.log(obj.hash());
-    /*
-    getObjectShallow( 'f011b0b1f09925e1e3d08cdd18ddcac39919730e', 
-        function( obj ) {
-            addObjToObj( "haha, first", obj );
-            console.log( obj.hash() );
-        } );
-    */
-}
-//test();
-
 

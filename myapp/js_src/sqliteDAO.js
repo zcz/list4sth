@@ -1,6 +1,6 @@
 // sqlite database implementation, contain following tables
-//1. object( hash(PK), json ) contains {TREE, MARK}
-//2. object( name(PK), json ) contains {LINK}
+//1. object( hash(PK), json ) contains {TREE, LINK}
+//2. user( name(PK), json ) contains {USER}
 
 var db = initDB("./test.db");
 var baseObj = require('./object');
@@ -20,21 +20,15 @@ function initDB(fileLocation) {
             console.log('create table "object", err', err);
         });
         
-    db.run("CREATE TABLE IF NOT EXISTS link (name TEXT PRIMARY KEY, json TEXT)",
+    db.run("CREATE TABLE IF NOT EXISTS user (name TEXT PRIMARY KEY, json TEXT)",
         function(err) {
-            console.log('create table "link", err', err);
+            console.log('create table "user", err', err);
         });
     return db;
 }
 
-function insertObject(object, callback, ifReplace) {
-    ifReplace = typeof ifReplace !== undefined ? ifReplace : false;
-    var query = "";
-    if (ifReplace === true) {
-        query = "INSERT OR REPLACE INTO object (hash, json) VALUES (?, ?)";
-    } else {
-        query = "INSERT OR IGNORE INTO object (hash, json) VALUES (?, ?)";
-    }
+function insertObject(object, callback) {
+    var query = "INSERT OR IGNORE INTO object (hash, json) VALUES (?, ?)";
     db.run(query, object.hash(), object.json(), function(err) {
         if (err === null) {
             if (typeof callback === 'function' ) callback();
@@ -45,17 +39,10 @@ function insertObject(object, callback, ifReplace) {
     });
 }
 
-function getObjectByHash(id, callback, objIfNull) {
+function getObjectByHash(id, callback) {
     db.get("SELECT * FROM object WHERE hash=?", id, function(err, raw) {
-        var obj = undefined;
         if (raw !== undefined) {
-            obj = baseObj.wireObject(raw.json);
-        }
-        if (objIfNull !== undefined && obj === undefined) {
-            obj = objIfNull;
-        }
-        if (obj !== undefined) {
-            callback( obj );
+            callback( baseObj.wireObject(raw.json) );
         } else {
             throw "db, getObjectByHash, err:" + err;            
         }
@@ -67,7 +54,43 @@ function removeObject( obj, callback ) {
     db.run( s, obj.hash(), callback );
 }
 
-function getAllLink(callback) {
+function saveUser(user, callback) {
+    //console.log("save user: " + user.json());
+    var query = "INSERT OR REPLACE INTO user (name, json) VALUES (?, ?)";
+    db.run(query, user.getName(), user.json(), function(err) {
+        if (err === null) {
+            if (typeof callback === 'function' ) callback();
+        }
+        else {
+            throw "db, saveUser, err:" + err;
+        }
+    });
+}
+
+function getUserByName( name, callback ) {
+    console.log("getUserByName: name="+name);
+    db.get("SELECT * FROM user WHERE name=?", name, function(err, raw) {
+        if (raw !== undefined) {
+            callback( baseObj.wireObject(raw.json) );
+        } else {
+            throw "db, getUserByName, err:" + err;            
+        }
+    });
+}
+
+function getAllUsers( callback ) {
+    db.all("SELECT * FROM user where LENGTH(name) > 0", function(err, raws) {
+        for (var i=0; i<raws.length; ++i) {
+            raws[i] = baseObj.wireObject( raws[i].json );   
+        };
+        if (typeof callback === 'function') {
+            callback( raws );
+        }
+    });
+}
+
+/*
+function getAllLink( callback ) {
     db.all("select * from object where LENGTH(hash) < 40", function(err, raws) {
         for (var i=0; i<raws.length; ++i) {
             raws[i] = baseObj.wireObject(raws[i].json);   
@@ -77,11 +100,17 @@ function getAllLink(callback) {
         }
     });
 }
+*/
 
 exports.insertObject = insertObject;
 exports.getObjectByHash = getObjectByHash;
-exports.getAllLink = getAllLink;
+//exports.getAllLink = getAllLink;
 exports.removeObject = removeObject;
+
+exports.saveUser = saveUser;
+exports.getAllUsers = getAllUsers;
+exports.getUserByName = getUserByName;
+
 
 // ------------------------ test ----------------------------
 
