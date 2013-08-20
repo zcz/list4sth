@@ -7,10 +7,11 @@ $(function() {
     function expand( holder, id) {
         var hash = holder.find("#"+id).attr("hash");
         $.get('JSON/'+hash, function(data) {
-            holder.find("#"+id).html( prepareElement(data.text, id) );
+            holder.find("#"+id).html( prepareElement(data.text, id, hash) );
             prepareAppend( holder.find("#"+id).find(".appendLink") );
             prepareEdit( holder.find("#"+id).find(".editLink") );
             prepareInsert( holder.find("#"+id).find(".insertLink") );
+            prepareHash( holder.find("#"+id).find(".hashLink"));
             
             if (data.list.length > 0) {
                 var idd = "";
@@ -27,7 +28,7 @@ $(function() {
         });
     }
 
-    function prepareElement( text, uri ) {
+    function prepareElement( text, uri, hash ) {
         var editUri = linkName + "/edit/" + uri;
         var removeUri = linkName + "/remove/" + uri;
         var appendUri = linkName + "/append/" + uri;
@@ -35,14 +36,16 @@ $(function() {
         var s = 
             "<div>"+
                 "<span style='padding-right:10px' class='text'>" + text + "</span>" +
-                "<span>"+
+                "<span style='padding-right:10px'>"+
                     "<a rel='"+editUri+"' href='' title='edit this object' class='editLink' >E</a>"+
                     "&nbsp;|&nbsp;" + 
                     "<a rel='"+appendUri+"' href='' title='append to this object' class='appendLink' >A</a>"+
                     "&nbsp;|&nbsp;" + 
                     "<a rel='"+insertUri+"' href='' title='insert into this object' class='insertLink' >T</a>"+
                     "&nbsp;|&nbsp;" +                     
-                    "<a href='"+removeUri+"' title='remove this object' >R</a>" + 
+                    "<a href='"+removeUri+"' title='remove this object' >R</a>" +
+                    "&nbsp;|&nbsp;" +                     
+                    "<a rel='"+hash+"' href='' title='show object hash' class='hashLink' >H</a>" +
                 "</span>"+    
             "</div>";
         return s;
@@ -87,6 +90,19 @@ $(function() {
                 
                 $(this).parent().parent().append(form);
                 form.find("input").focus();
+            }
+            return false;
+        });
+    }
+    
+    function prepareHash( holder ) {
+        holder.click( function() {
+            if (this.showIt === undefined) {
+                this.showIt = true;
+                var s = "<span class='hashText'>[" + $(this).attr("rel") + "]</span>";
+                $(this).parent().parent().append(s);
+            } else {
+            	$(this).parent().parent().find(".hashText").toggle();            	
             }
             return false;
         });
