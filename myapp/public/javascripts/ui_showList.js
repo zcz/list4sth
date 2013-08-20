@@ -7,7 +7,7 @@ $(function() {
     function expand( holder, id, hash, depth) {
         //var hash = holder.find("#"+id).attr("hash");
         $.get('/JSON/'+hash, function(data) {
-            if (depth !== -1) {
+            if (depth > 0) {
                 holder.html( prepareElement(data.text, id, hash) );
                 prepareAppend( holder.find(".appendLink") );
                 prepareEdit( holder.find(".editLink") );
