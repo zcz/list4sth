@@ -1,18 +1,22 @@
 #wrap {
-  width:1400px;
   margin:0 auto;
 }
 
 /* for the tree display */
 #treeBlock {
-  float:right;
-  width:470px;
+  float:left;
   font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+}
+
+.limitWidth_500 {
+    max-width : 500px;
 }
 
 /* for the calender display */
 #calendar {
     float:left;
+    margin-right: 500px;
+    padding-right: 20px;
     
     text-align: center;
     font-size: 14px;

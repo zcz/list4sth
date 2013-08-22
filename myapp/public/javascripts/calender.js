@@ -3,12 +3,12 @@
     // export function
     $.addTextEvent = addTextEvent;
     
-    var date = new Date();
-    var d = date.getDate();
-    var m = date.getMonth();
-    var y = date.getFullYear();
+    var initFlag = false;
     
-	$(document).ready(function() {
+	function init() {
+        
+        $("div#wrap").prepend('<div id="calendar"></div>');
+        $("div#treeBlock").addClass("limitWidth_500");
         
         $('#calendar').fullCalendar({
             header: {
@@ -19,13 +19,12 @@
             editable: false,
             events : [],
         });
-	});
+	}
     
-    function addTextEvent( text ) {
+    function parseEventFromString( text ) {
         function trim( s ) {
             return s.replace(/^\s+|\s+$/g, '');    
         }
-        
         var validDate = /^([a-z0-9A-z,\._ :\/]+\|){1}.*$/g;
         var delimeter = "|";
         
@@ -37,7 +36,7 @@
             var theDate = Date.parse(dateString);
             if (theDate === null) {
                 alert("no date found in string: \"" + s + "\"");
-                return false;
+                return null;
             } else {
                 if (theDate.between( Date.today().addDays(-30), Date.today().addDays(30) ) === false) {
                     alert("entry: \"" + s + "\" is not within 30 days, is it correct?" );
@@ -47,12 +46,22 @@
                     start: theDate,
                     allDay: true,
                 };
-                $('#calendar').fullCalendar("addEventSource", [event]);
-                return true;
+                return event;
             }
         } else {
-            return false;
-        }        
+            return null;
+        } 
+    }
+    
+    function addTextEvent( text ) {
+        var event = parseEventFromString(text);
+        if (event !== null) {
+            if (initFlag === false) {
+                init();
+                initFlag = true;
+            }
+            $('#calendar').fullCalendar("addEventSource", [event]);
+        }
     }
 	
 })(jQuery);
