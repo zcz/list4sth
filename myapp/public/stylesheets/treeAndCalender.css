@@ -4,23 +4,25 @@
 
 /* for the tree display */
 #treeBlock {
-  float:left;
+  float : left; 
   font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
 }
 
 .limitWidth_420 {
-    max-width : 420px;
+    width : auto;
+    max-width : 600px;
+    padding-left: 20px;
 }
 
 /* for the calender display */
 #calendar {
     float:left;
-    padding-right: 20px;
     
     text-align: center;
     font-size: 14px;
     font-family: "Lucida Grande",Helvetica,Arial,Verdana,sans-serif;
     
-    width: 850px;
+    width: 65%;
+    max-width : 1000px;
 	margin: 0 auto;
 }
