@@ -8,7 +8,7 @@
 	function init() {
         
         $("div#wrap").prepend('<div id="calendar"></div>');
-        $("div#treeBlock").addClass("limitWidth_500");
+        $("div#treeBlock").addClass("limitWidth_420");
         
         $('#calendar').fullCalendar({
             header: {

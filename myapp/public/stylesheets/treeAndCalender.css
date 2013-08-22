@@ -8,20 +8,19 @@
   font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
 }
 
-.limitWidth_500 {
-    max-width : 500px;
+.limitWidth_420 {
+    max-width : 420px;
 }
 
 /* for the calender display */
 #calendar {
     float:left;
-    margin-right: 500px;
     padding-right: 20px;
     
     text-align: center;
     font-size: 14px;
     font-family: "Lucida Grande",Helvetica,Arial,Verdana,sans-serif;
     
-    width: 900px;
+    width: 850px;
 	margin: 0 auto;
 }
