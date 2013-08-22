@@ -33,13 +33,16 @@ $(function() {
     }
 
     function prepareElement( text, uri, hash ) {
+        // the addTextEvent may return true, indicating entry is added to the calender
+        $.addTextEvent(text);
+        
         var editUri = linkName + "/edit/" + uri;
         var removeUri = linkName + "/remove/" + uri;
         var appendUri = linkName + "/append/" + uri;
         var insertUri = linkName + "/insert/" + uri;
         var s = 
             "<div>"+
-                "<span style='padding-right:10px' class='text'>" + text + "</span>" +
+                "<span style='padding-right:10px' class='textEntry'>" + text + "</span>" +
                 "<span style='padding-right:10px'>"+
                     "<a rel='"+editUri+"' href='' title='edit this object' class='editLink' >E</a>"+
                     "&nbsp;|&nbsp;" + 
@@ -76,10 +79,9 @@ $(function() {
                 this.visitted = true;
                 var form = $( ".formTmp" ).clone().removeClass("formTmp");
                 form.attr('action', $(this).attr("rel"));
-                //alert("content:"  + $(this).parent().parent().find(".text").text() );
                 $(this).parent().parent().after(form);
                 $(this).parent().parent().hide();
-                form.find("input").val( $(this).parent().parent().find(".text").text() ).focus();
+                form.find("input").val( $(this).parent().parent().find(".textEntry").text() ).focus();
             }
             return false;
         });

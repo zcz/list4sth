@@ -29,7 +29,7 @@ function showLink(req, res){
                 res.redirect(utility.getUrl( userName, linkName ));                
             });
         } else {
-            res.render('tree', { 
+            res.render('treeAndCalender', { 
                 title: 'List: '+ linkName,
                 objectHash : obj.hash(), 
                 linkName : encodeURIComponent(linkName),

@@ -1,0 +1,21 @@
+extends layout
+
+block content
+    
+    
+    link(rel='stylesheet', href='/stylesheets/treeAndCalender.css')
+    link(rel='stylesheet', href='/external/fullcalendar/fullcalendar.css')
+    link(rel='stylesheet', media='print', href='/external/fullcalendar/fullcalendar.print.css')
+    script(src='/external/fullcalendar/fullcalendar.js')
+    script(src='/external/js.ninja.date.js')
+    script(src='/javascripts/calender.js')
+    
+    
+    div#wrap
+        // calender comes frist, then is the tree
+        div#calendar
+        
+        include treeBlock
+    
+    
+  

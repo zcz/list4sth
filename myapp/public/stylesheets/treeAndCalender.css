@@ -1,0 +1,23 @@
+#wrap {
+  width:1400px;
+  margin:0 auto;
+}
+
+/* for the tree display */
+#treeBlock {
+  float:right;
+  width:470px;
+  font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+}
+
+/* for the calender display */
+#calendar {
+    float:left;
+    
+    text-align: center;
+    font-size: 14px;
+    font-family: "Lucida Grande",Helvetica,Arial,Verdana,sans-serif;
+    
+    width: 900px;
+	margin: 0 auto;
+}

@@ -1,0 +1,22 @@
+mixin link(href, name)
+  a(class=attributes.class, href=href)= name
+  
+block treeBlock
+  div#treeBlock
+      script(src='/javascripts/tree_showList.js')
+      
+      h1 #{title} 
+        +link(linkName+"/remove/", "remove" )
+      
+      form
+        input(name="begin", type='text', size="60")
+      
+      div(id="expList", linkName= linkName, hash= objectHash)
+    
+      form 
+        input(name="end", type='text', size="60")
+        
+      form(class="formTmp")
+        input(name="text", type="text", size="60")
+  
+  
