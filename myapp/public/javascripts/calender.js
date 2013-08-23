@@ -2,6 +2,7 @@
 
     // export function
     $.addTextEvent = addTextEvent;
+    $.sortListByDate = sortListByDate;
     
     var initFlag = false;
     
@@ -25,13 +26,13 @@
         function trim( s ) {
             return s.replace(/^\s+|\s+$/g, '');    
         }
-        var validDate = /^([a-z0-9A-z,\._ :\/]+\|){1}.*$/g;
-        var delimeter = "|";
+        var validDate = /^([a-z0-9A-z,\._\- :\/]+--){1}.*$/g;
+        var delimeter = "--";
         
         if (validDate.test(text) === true) {
             var s = text;
             var dateString = s.slice(0, s.indexOf( delimeter ) );    
-            var textString = s.slice(s.indexOf( delimeter ) + 1);
+            var textString = s.slice(s.indexOf( delimeter ) + delimeter.length);
             textString=trim(textString);
             var theDate = Date.parse(dateString);
             if (theDate === null) {
@@ -61,7 +62,37 @@
                 initFlag = true;
             }
             $('#calendar').fullCalendar("addEventSource", [event]);
+            return $.datepicker.formatDate('dd, M DD', event.start) + " -- " + event.title;
+        } else {
+            return text;
         }
+    }
+    
+    function sortListByDate(list) {
+        // if there is no calander element, return, without sort anything.
+        if (initFlag === false) {
+            return;
+        }
+        //sort the list
+        var mylist = list;
+        var listitems = mylist.children('li').get();
+        listitems.sort(function(a, b) {
+           var eventA = parseEventFromString($(a).text());
+           var eventB = parseEventFromString($(b).text());
+           var dateA = new Date(0);
+           var dateB = new Date(0);
+           if (eventA !== null) {
+               dateA = eventA.start;
+           }
+           if (eventB !== null) {
+               dateB = eventB.start;
+           }
+           return dateA.compareTo(dateB);
+        });
+        $.each(listitems, function(idx, itm) { mylist.append(itm); });
     }
 	
 })(jQuery);
+
+
+
