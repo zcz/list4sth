@@ -34,7 +34,7 @@ $(function() {
         
         $.refreshCalender();
         
-        $("#beginningForm").attr("action", linkName + "/append/" + prepareChildId(objectHash, 0))[0].reset();
+        $("#beginningForm").attr("action", linkName + "/insert/" + objectHash)[0].reset();
         $("#endingForm").attr("action", linkName + "/append/" + prepareChildId(objectHash, -2))[0].reset();
         
         waitingList = {};
