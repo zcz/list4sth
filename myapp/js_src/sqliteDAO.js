@@ -73,7 +73,7 @@ function getUserByName( name, callback ) {
         if (raw !== undefined) {
             callback( baseObj.wireObject(raw.json) );
         } else {
-            throw "db, getUserByName, name: "name + " err:" + err;            
+            throw "db, getUserByName, name: " + name + " err:" + err;            
         }
     });
 }
