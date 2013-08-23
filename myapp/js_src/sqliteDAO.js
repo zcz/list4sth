@@ -44,7 +44,7 @@ function getObjectByHash(id, callback) {
         if (raw !== undefined) {
             callback( baseObj.wireObject(raw.json) );
         } else {
-            throw "db, getObjectByHash, err:" + err;            
+            throw "db, getObjectByHash, id: " + id + " err:" + err;            
         }
     });
 }
@@ -73,7 +73,7 @@ function getUserByName( name, callback ) {
         if (raw !== undefined) {
             callback( baseObj.wireObject(raw.json) );
         } else {
-            throw "db, getUserByName, err:" + err;            
+            throw "db, getUserByName, name: "name + " err:" + err;            
         }
     });
 }
