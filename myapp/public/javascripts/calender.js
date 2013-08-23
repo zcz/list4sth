@@ -3,6 +3,7 @@
     // export function
     $.addTextEvent = addTextEvent;
     $.sortListByDate = sortListByDate;
+    $.standardizeDate = standardizeDate;
     
     var initFlag = false;
     
@@ -22,7 +23,8 @@
         });
 	}
     
-    function parseEventFromString( text ) {
+    function parseEventFromString( text, showAlert ) {
+        if (showAlert === undefined) showAlert = false;
         function trim( s ) {
             return s.replace(/^\s+|\s+$/g, '');    
         }
@@ -33,14 +35,18 @@
             var s = text;
             var dateString = s.slice(0, s.indexOf( delimeter ) );    
             var textString = s.slice(s.indexOf( delimeter ) + delimeter.length);
-            textString=trim(textString);
+            //textString=trim(textString);
             var theDate = Date.parse(dateString);
             if (theDate === null) {
-                alert("no date found in string: \"" + s + "\"");
+                if (showAlert) {
+                    alert("no date found in string: \"" + s + "\"");                    
+                }
                 return null;
             } else {
                 if (theDate.between( Date.today().addDays(-30), Date.today().addDays(30) ) === false) {
-                    alert("entry: \"" + s + "\" is not within 30 days, is it correct?" );
+                    if (showAlert){
+                        alert("entry: \"" + s + "\" is not within 30 days, is it correct?" );                        
+                    }
                 }
                 var event = {
                     title: textString,
@@ -55,18 +61,24 @@
     }
     
     function addTextEvent( text ) {
-        var event = parseEventFromString(text);
+        var event = parseEventFromString(text, true);
         if (event !== null) {
             if (initFlag === false) {
                 init();
                 initFlag = true;
             }
-            $('#calendar').fullCalendar("addEventSource", [event]);
-            return $.datepicker.formatDate('dd, M DD', event.start) + " -- " + event.title;
+            $('#calendar').fullCalendar("addEventSource", [event]);       
+        }
+    }
+    
+    function standardizeDate( text ) {
+        var event = parseEventFromString( text );
+        if (event !== null) {
+            return $.datepicker.formatDate('dd, M DD', event.start) + " --" + event.title;
         } else {
             return text;
         }
-    }
+    } 
     
     function sortListByDate(list) {
         // if there is no calander element, return, without sort anything.

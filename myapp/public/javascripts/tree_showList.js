@@ -1,4 +1,12 @@
 $(function() {
+    
+    $("input").on('input change focus', function() {
+        var text = $(this).val();
+        var refined = $.standardizeDate(text);
+        if( text !== refined) {
+            $(this).val(refined);
+        }
+    } );
 
     var linkName = $("#expList").attr("linkName");
     var objectHash = $("#expList").attr("hash");
@@ -54,7 +62,7 @@ $(function() {
 
     function prepareElement( text, uri, hash ) {
         // the addTextEvent may return true, indicating entry is added to the calender
-        text = $.addTextEvent(text);
+        $.addTextEvent(text);
         
         var editUri = linkName + "/edit/" + uri;
         var removeUri = linkName + "/remove/" + uri;
@@ -98,7 +106,7 @@ $(function() {
             if (this.visitted === undefined) {
                 this.visitted = true;
                 parent.visitted = true;
-                var form = $( ".formTmp" ).clone().removeClass("formTmp");
+                var form = $( ".formTmp" ).clone(true).removeClass("formTmp");
                 form.attr('action', $(this).attr("rel"));
                 $(this).parent().parent().parent().after(form);
                 form.find("input").focus();
@@ -113,7 +121,7 @@ $(function() {
             if (this.visitted === undefined) {
                 this.visitted = true;
                 parent.visitted = true;
-                var form = $( ".formTmp" ).clone().removeClass("formTmp");
+                var form = $( ".formTmp" ).clone(true).removeClass("formTmp");
                 form.attr('action', $(this).attr("rel"));
                 $(this).parent().parent().after(form);
                 $(this).parent().parent().hide();
@@ -128,7 +136,7 @@ $(function() {
             if (this.visitted === undefined) {
                 this.visitted = true;
                 parent.visitted = true;
-                var form = $( ".formTmp" ).clone().removeClass("formTmp");
+                var form = $( ".formTmp" ).clone(true).removeClass("formTmp");
                 form.attr('action', $(this).attr("rel"));
                 
                 $(this).parent().parent().append(form);
@@ -147,7 +155,7 @@ $(function() {
                 $(this).parent().parent().append(s);
             } else {
                 parent.visitted = false;
-            	$(this).parent().parent().find(".hashText").toggle();            	
+                $(this).parent().parent().find(".hashText").toggle();            	
             }
             return false;
         });
