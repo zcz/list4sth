@@ -61,6 +61,7 @@ var objectInfo = {
             return save(that);
         };
         that.getKth = function( pos ) {
+            if (pos < 0) return that.list[that.list.length-1];
             return that.list[pos];
         };
         that.listReplace = function( pos, hash ) {

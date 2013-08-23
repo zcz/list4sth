@@ -1,62 +1,87 @@
 $(function() {
     
-    $("input").on('input change focus', function() {
-        var text = $(this).val();
-        var refined = $.standardizeDate(text);
-        if( text !== refined) {
-            $(this).val(refined);
-        }
-    } );
+    var linkName;
+    var waitingList;
+    
+    (function initWholePage() {
+        
+        $("input").on('input change focus', function() {
+            var text = $(this).val();
+            var refined = $.standardizeDate(text);
+            if( text !== refined) {
+                $(this).val(refined);
+            }
+        } );
+        
+        $("form").submit(function() { 
+            $(this).ajaxSubmit({
+                url : $(this).attr("rel"),
+                success : function( whole ) {
+                    $.daoSaveObjects( whole.objects );
+                    refreshTreeBlockAndCalender( whole.rootHash );
+                },
+            }); 
+            return false; 
+        });
+        
+        linkName = $("#expList").attr("linkName");
+        var objectHash = $("#expList").attr("hash");
+        refreshTreeBlockAndCalender( objectHash );
+    })();
+    
 
-    var linkName = $("#expList").attr("linkName");
-    var objectHash = $("#expList").attr("hash");
-    var waitingList = {};
-    expand($("#expList"), objectHash, objectHash, 0);
-    
-    //shallow sort
-    var refreshId = setInterval( function() 
-    {
-       if (JSON.stringify(waitingList) === "{}") {
-            clearInterval(refreshId);
-            $.sortListByDate($("#expList").children('ul'));
-        } 
-    }, 100);
-    
+    function refreshTreeBlockAndCalender( objectHash ) {
+        
+        $.refreshCalender();
+        
+        $("#beginningForm").attr("action", linkName + "/append/" + prepareChildId(objectHash, 0))[0].reset();
+        $("#endingForm").attr("action", linkName + "/append/" + prepareChildId(objectHash, -2))[0].reset();
+        
+        waitingList = {};
+        $("#expList").attr("hash", objectHash);
+        $("#expList").children().remove();
+        
+        expand($("#expList"), objectHash, objectHash, 0);
+        
+        //shallow sort
+        var refreshId = setInterval( function() 
+        {
+           if (JSON.stringify(waitingList) === "{}") {
+                clearInterval(refreshId);
+                $.sortListByDate($("#expList").children('ul'));
+            } 
+        }, 100);
+    }    
     
     function expand( holder, id, hash, depth) {
         //var hash = holder.find("#"+id).attr("hash");
         waitingList[id] = id;
-        $.ajax({
-            type: "GET",
-            cache: true,
-            url: '/JSON/'+hash, 
-            success : function(data) {
-                if (depth > 0) {
-                    holder.html( prepareElement(data.text, id, hash) );
-                    prepareAppend( holder.find(".appendLink"), holder );
-                    prepareEdit( holder.find(".editLink"), holder );
-                    prepareInsert( holder.find(".insertLink"), holder );
-                    prepareHash( holder.find(".hashLink"), holder);    
-                    prepareEditEntry( holder );
+        $.daoLoadObject( hash, function( data ) {
+            if (depth > 0) {
+                holder.html( prepareElement(data.text, id, hash) );
+                prepareAppend( holder.find(".appendLink"), holder );
+                prepareEdit( holder.find(".editLink"), holder );
+                prepareInsert( holder.find(".insertLink"), holder );
+                prepareHash( holder.find(".hashLink"), holder);   
+                prepareRemove( holder.find(".removeLink"), holder);
+                prepareOptionalEntry( holder );
+            }
+            delete waitingList[id];
+            
+            if (data.list.length > 0) {
+                var idd = "";
+                var i = 0;
+                holder.append("<ul></ul>");
+                holder = holder.find("ul");
+                for ( i = 0; i < data.list.length; ++i) {
+                    idd = prepareChildId(id, i);
+                    holder.append("<li id=" + idd +" hash=" + data.list[i]+ "></li>");
+                };
+                for ( i = 0; i < data.list.length; ++i) {
+                    idd = prepareChildId(id, i);
+                    expand(holder.find("#"+idd), idd, data.list[i], depth+1);
                 }
-                delete waitingList[id];
-                
-                if (data.list.length > 0) {
-                    var idd = "";
-                    var i = 0;
-                    holder.append("<ul></ul>");
-                    holder = holder.find("ul");
-                    for ( i = 0; i < data.list.length; ++i) {
-                        idd = prepareChildId(id, i);
-                        holder.append("<li id=" + idd +" hash=" + data.list[i]+ "></li>");
-                    };
-                    for ( i = 0; i < data.list.length; ++i) {
-                        idd = prepareChildId(id, i);
-                        expand(holder.find("#"+idd), idd, data.list[i], depth+1);
-                    }
-                }
-            },
-            async : true
+            }
         });
     }
 
@@ -72,7 +97,7 @@ $(function() {
             "<div>"+
                 "<span style='padding-right:10px' class='textEntry'>" + text + "</span>" +
                 "<span class='editEntry'>"+ 
-                    "<a href='"+removeUri+"' title='remove this object' >R</a>" +
+                    "<a rel='"+removeUri+"' href='' title='remove this object' class='removeLink'>R</a>" +
                 "</span>" +
                 "<span style='padding-right:10px' class='editEntry optionalEntry'>"+
                     "&nbsp;|&nbsp;" +                     
@@ -88,7 +113,7 @@ $(function() {
         return s;
     }
     
-    function prepareEditEntry (holder) {
+    function prepareOptionalEntry (holder) {
         $(holder).find(".optionalEntry").hide();
         $(holder).find(".editEntry").hover( function(){
             $(this).parent().find(".optionalEntry").show();
@@ -97,6 +122,22 @@ $(function() {
             if (holder.visitted !== true){
                 $(this).parent().find(".optionalEntry").hide(); 
             }
+        });
+    }
+    
+    function prepareRemove( holder, parent) {
+        holder.click( function() {
+            var url = $(this).attr("rel");
+            $.ajax({
+                type: "GET",
+                url: url, 
+                success : function( whole ) {
+                    //console.log("objecs" , whole.objects);
+                    $.daoSaveObjects( whole.objects );
+                    refreshTreeBlockAndCalender( whole.rootHash );
+                },
+            });
+            return false;
         });
     }
     

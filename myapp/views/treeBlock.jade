@@ -4,17 +4,19 @@ mixin link(href, name)
 block treeBlock
   div#treeBlock
       script(src='/javascripts/tree_showList.js')
+      script(src='/javascripts/memoryDAO.js')
+      
       
       h1 #{title} 
         +link(linkName+"/remove/", "remove" )
       
-      form
-        input(name="begin", type='text', size="60")
+      form#beginningForm
+        input(name="text", type='text', size="60")
       
       div(id="expList", linkName= linkName, hash= objectHash)
     
-      form 
-        input(name="end", type='text', size="60")
+      form#endingForm
+        input(name="text", type='text', size="60")
         
       form(class="formTmp")
         input(name="text", type="text", size="60")

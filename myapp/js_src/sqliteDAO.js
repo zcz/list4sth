@@ -68,7 +68,7 @@ function saveUser(user, callback) {
 }
 
 function getUserByName( name, callback ) {
-    console.log("getUserByName: name="+name);
+    //console.log("getUserByName: name="+name);
     db.get("SELECT * FROM user WHERE name=?", name, function(err, raw) {
         if (raw !== undefined) {
             callback( baseObj.wireObject(raw.json) );

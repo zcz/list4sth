@@ -4,11 +4,22 @@
     $.addTextEvent = addTextEvent;
     $.sortListByDate = sortListByDate;
     $.standardizeDate = standardizeDate;
+    $.refreshCalender = refreshCalender;
     
     var initFlag = false;
     
+    // do the inverse thing compared with init
+    function refreshCalender() {
+        if (initFlag === true) {
+            $('#calendar').fullCalendar( 'removeEvents' );
+            //$("#calendar").remove();
+            //$("div#treeBlock").removeClass("limitWidth_420");
+            //initFlag = false;
+        }
+    }
+    
 	function init() {
-        
+        initFlag = true;
         $("div#wrap").prepend('<div id="calendar"></div>');
         $("div#treeBlock").addClass("limitWidth_420");
         
@@ -65,7 +76,6 @@
         if (event !== null) {
             if (initFlag === false) {
                 init();
-                initFlag = true;
             }
             $('#calendar').fullCalendar("addEventSource", [event]);       
         }

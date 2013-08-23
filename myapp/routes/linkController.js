@@ -9,32 +9,11 @@ var utility = require("../js_src/utility.js");
 
 function showLink(req, res){    
     loadObject( req, function( user, link, obj, userName, linkName ) {
-        var addBegin = req.query.begin;
-        var addEnd = req.query.end;
-        var text = "";
-        var pos = NaN;
-        
-        if (addBegin !== undefined) {
-            text = addBegin;
-            pos = 0;
-        }
-        if (addEnd !== undefined) {
-            text = addEnd;
-            pos = -1;
-        }
-        if (isNaN(pos) === false) {
-            loadTextObject( text, function( text ) {
-                obj = manager.addObjToObj(text, obj, pos);
-                setLinkTarget(user, link, obj, linkName);
-                res.redirect(utility.getUrl( userName, linkName ));                
-            });
-        } else {
-            res.render('treeAndCalender', { 
-                title: 'List: '+ linkName,
-                objectHash : obj.hash(), 
-                linkName : encodeURIComponent(linkName),
-            });            
-        }
+        res.render('treeAndCalender', { 
+            title: 'List: '+ linkName,
+            objectHash : obj.hash(), 
+            linkName : encodeURIComponent(linkName),
+        }); 
     });
 }
 
@@ -50,13 +29,11 @@ function removeItem( req, res ) {
             res.redirect(utility.getUrl( userName ));
         } else {
             findThroughPath( uri, function(arr, origin ) {
-                var last = arr.length -1;
-                var tmp = arr[last-1].removeFromList( origin[last] );
-                for (var i = last-2; i>=0; --i) {
-                    tmp = arr[i].listReplace(origin[i+1], tmp.hash());                        
-                }
-                setLinkTarget(user, link, tmp, linkName); 
-                res.redirect(utility.getUrl( userName, linkName ));
+                var last = arr.length-1;
+                arr[last-1] = arr[last-1].removeFromList( origin[last] );
+                var whole = prepareResponseObjectArray( arr, origin, last-2 ); 
+                setLinkTarget(user, link, arr[0], linkName); 
+                res.json( whole );
             });
         }
     });
@@ -69,12 +46,10 @@ function appendItem(req, res) {
         findThroughPath( uri, function(arr, origin) {
             loadTextObject( text, function( text ) {
                 var last = arr.length-1;
-                var tmp = manager.addObjToObj(text, arr[last-1], parseInt(origin[last], 10) + 1);        
-                for (var i = last-2; i>=0; --i) {
-                    tmp = arr[i].listReplace(origin[i+1], tmp.hash());                        
-                }
-                setLinkTarget(user, link, tmp, linkName); 
-                res.redirect(utility.getUrl( userName, linkName ));
+                arr[last-1] = manager.addObjToObj(text, arr[last-1], parseInt(origin[last], 10) + 1);    
+                var whole = prepareResponseObjectArray( arr, origin, last-2 ); 
+                setLinkTarget(user, link, arr[0], linkName); 
+                res.json( whole );
             });
         });
     });
@@ -87,12 +62,10 @@ function insertItem(req, res) {
         findThroughPath( uri, function(arr, origin) {
             loadTextObject( text, function( text ) {           
                 var last = arr.length -1;
-                var tmp = manager.addObjToObj(text, arr[last], 0);        
-                for (var i = last-1; i>=0; --i) {
-                    tmp = arr[i].listReplace(origin[i+1], tmp.hash());                        
-                }
-                setLinkTarget(user, link, tmp, linkName); 
-                res.redirect(utility.getUrl( userName, linkName ));
+                arr[last] = manager.addObjToObj(text, arr[last], 0);        
+                var whole = prepareResponseObjectArray( arr, origin, last-1 ); 
+                setLinkTarget(user, link, arr[0], linkName); 
+                res.json( whole );
             });
         });    
     });
@@ -105,24 +78,21 @@ function editItem( req, res ) {
         findThroughPath( uri, function(arr, origin) {
             loadTextObject( text, function( text ) {
                 var last = arr.length - 1;
-                var tmp;
                 if (typeof text === "string") {
-                    tmp = arr[last].setText( text );
+                    arr[last].setText( text );
                 } else {
-                    tmp = text;
+                    arr[last] = text;
                 }
-                for (var i = last-1; i>=0; --i) {
-                    tmp = arr[i].listReplace(origin[i+1], tmp.hash());                        
-                }
-                setLinkTarget(user, link, tmp, linkName); 
-                res.redirect(utility.getUrl( userName, linkName ));
+                var whole = prepareResponseObjectArray( arr, origin, last-1 ); 
+                
+                setLinkTarget(user, link, arr[0], linkName); 
+                res.json( whole );
             });
         });
     });
 }
 
 function loadTextObject( text, callback ) {
-    console.log("text:"+text);
     var link = /^\[TREE:([a-f0-9]{40})\]$/g;
     var hash = /([a-f0-9]{40})/g;
 
@@ -179,6 +149,23 @@ function findThroughPath( uri, callback ){
             }
         });
     } )(arr, 0);
+}
+
+function prepareResponseObjectArray( arr, origin, pos ) {
+    var i;
+    var whole = {
+        rootHash : "",
+        objects : {},
+    };
+    for (i = pos; i>=0; --i) {
+        arr[i] = arr[i].listReplace(origin[i+1], arr[i+1].hash());                        
+    }
+    for (i = 0; i < arr.length; ++i ) {
+        whole.objects[arr[i].hash()] = arr[i];
+        //console.log("add hash:"+arr[i].hash()+" obj:"+arr[i]);
+    }
+    whole.rootHash = arr[0].hash();
+    return(whole);
 }
 
 exports.showLink = showLink;
