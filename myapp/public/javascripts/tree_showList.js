@@ -119,9 +119,10 @@ $(function() {
             $(this).parent().find(".optionalEntry").show();
         }, 
         function() {
-            if (holder.visitted !== true){
-                $(this).parent().find(".optionalEntry").hide(); 
-            }
+            // never hide
+            //if (holder.visitted !== true){
+            //    $(this).parent().find(".optionalEntry").hide(); 
+            //}
         });
     }
     
