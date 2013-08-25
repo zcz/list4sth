@@ -5,17 +5,24 @@ $(function() {
     
     (function initWholePage() {
         
+        /*
         $("input").on('input change focus', function() {
             var text = $(this).val();
-            var refined = $.standardizeDate(text);
+            var refined = $.standardizeDateForForm(text);
             if( text !== refined) {
                 $(this).val(refined);
             }
         } );
+        */
         
         $("form").submit(function() { 
             $(this).ajaxSubmit({
                 url : $(this).attr("rel"),
+                beforeSerialize: function(form, options) { 
+                    return $.standardizeDateForForm( form );
+                    //alert($(form).find("input").val());
+                    //return false;
+                },
                 success : function( whole ) {
                     $.daoSaveObjects( whole.objects );
                     refreshTreeBlockAndCalender( whole.rootHash );

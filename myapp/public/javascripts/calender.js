@@ -1,10 +1,10 @@
 (function($) {
 
     // export function
+    $.refreshCalender = refreshCalender;
     $.addTextEvent = addTextEvent;
     $.sortListByDate = sortListByDate;
-    $.standardizeDate = standardizeDate;
-    $.refreshCalender = refreshCalender;
+    $.standardizeDateForForm = standardizeDateForForm;
     
     var initFlag = false;
     
@@ -35,12 +35,13 @@
         });
 	}
     
-    function parseEventFromString( text, showAlert ) {
+    function parseEventFromString( text, showAlert, errorSet ) {
+        if (errorSet === undefined) errorSet = { error: true};
         if (showAlert === undefined) showAlert = false;
         function trim( s ) {
             return s.replace(/^\s+|\s+$/g, '');    
         }
-        var validDate = /^([a-z0-9A-z,\._\- :\/]+--){1}.*$/g;
+        var validDate = /--/g;
         var delimeter = "--";
         
         if (validDate.test(text) === true) {
@@ -48,24 +49,31 @@
             var dateString = s.slice(0, s.indexOf( delimeter ) );    
             var textString = s.slice(s.indexOf( delimeter ) + delimeter.length);
             //textString=trim(textString);
+            
             var theDate = Date.parse(dateString);
             if (theDate === null) {
-                if (showAlert) {
-                    alert("no date found in string: \"" + s + "\"");                    
+                errorSet.error = true;
+                if (showAlert === true) {
+                    alert("ERROR: no date found in string: \"" + s + "\"");                 
                 }
                 return null;
             } else {
-                if (theDate.between( Date.today().addDays(-30), Date.today().addDays(30) ) === false) {
-                    if (showAlert){
-                        alert("entry: \"" + s + "\" is not within 30 days, is it correct?" );                        
-                    }
-                }
                 var event = {
                     title: textString,
                     start: theDate,
                     allDay: true,
                 };
-                return event;
+
+                
+                if (theDate.between( Date.today().addDays(-30), Date.today().addDays(30) ) === false) {
+                    if (showAlert === true) {
+                        var answer = confirm("ERROE: \"" + s + "\" is not within 30 days, continue?");
+                        if (answer === false) {
+                            errorSet.error = true;
+                        }  
+                    }
+                }
+                return event;                    
             }
         } else {
             return null;
@@ -73,21 +81,38 @@
     }
     
     function addTextEvent( text ) {
-        var event = parseEventFromString(text, true);
+        // no need to do validation at this stage, too late
+        var event = parseEventFromString(text, false);
         if (event !== null) {
             if (initFlag === false) {
                 init();
             }
-            $('#calendar').fullCalendar("addEventSource", [event]);       
+            $('#calendar').fullCalendar("addEventSource", [event]); 
+            console.log("finish adding event");
         }
     }
     
-    function standardizeDate( text ) {
-        var event = parseEventFromString( text );
-        if (event !== null) {
-            return $.datepicker.formatDate('dd, M DD', event.start) + " --" + event.title;
+    function standardizeDateForForm( form ) {
+        var input = $(form).find("input");
+        var text = $(input).val();
+        var errorSet = {error : false};
+        var event = parseEventFromString( text, true, errorSet );
+        if (errorSet.error === false) {
+            
+            if (event !== null) {
+                var s = " --" + event.title;
+                if (event.start.getFullYear() !== new Date().getFullYear()) {
+                    s = $.datepicker.formatDate('dd M yy', event.start) + s;
+                } else {
+                    s = $.datepicker.formatDate('dd M DD', event.start) + s;                
+                }
+                $(input).val( s );                
+            }
+            $(input).removeClass('ui-state-error');
+            return true;
         } else {
-            return text;
+            $(input).addClass('ui-state-error');
+            return false;
         }
     } 
     
