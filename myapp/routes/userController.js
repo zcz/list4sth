@@ -1,4 +1,3 @@
-var manager = require('../js_src/objectManager.js');
 var dao = require('../js_src/sqliteDAO.js');
 var baseObj = require('../js_src/object.js');
 var utility = require("../js_src/utility.js");

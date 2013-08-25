@@ -53,6 +53,7 @@ var objectInfo = {
             if (pos > that.list.length || pos < 0) {
                 pos = that.list.length;
             }
+            obj = toTREE( obj );
             that.list.splice( pos, 0, obj.hash() );
             return save(that);
         };
@@ -61,7 +62,10 @@ var objectInfo = {
             return save(that);
         };
         that.getKth = function( pos ) {
-            if (pos < 0) return that.list[that.list.length-1];
+            //if (pos < 0) return that.list[that.list.length-1];
+            if (pos >= that.list.length || pos < 0) {
+                return that.hash();
+            }
             return that.list[pos];
         };
         that.listReplace = function( pos, hash ) {
@@ -125,6 +129,20 @@ var objectInfo = {
     },
 */
 };
+
+// function only accept string and TREE object
+function toTREE( obj ) {
+    if (typeof obj === 'string') {  // turn string to tree
+        var tmp = newObject( "TREE" );
+        tmp.setText( obj );
+        return tmp;
+    }
+    if (obj.getType() === 'TREE') {  
+        return obj;
+    } else {
+        throw "erro, toTREE failed: obj=" + JSON.stringify(obj);
+    }
+}
 
 function newObject(type, obj) {
     // temperal convert from BLOB to TREE

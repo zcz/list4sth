@@ -2,8 +2,7 @@
 /*
  * GET users listing.
  */
- 
-var manager = require('../js_src/objectManager.js');
+
 var dao = require('../js_src/sqliteDAO');
 var utility = require("../js_src/utility.js");
 
@@ -30,7 +29,7 @@ function removeItem( req, res ) {
         } else {
             findThroughPath( uri, function(arr, origin ) {
                 var last = arr.length-1;
-                arr[last-1] = arr[last-1].removeFromList( origin[last] );
+                arr[last-1].removeFromList( origin[last] );
                 var whole = prepareResponseObjectArray( arr, origin, last-2 ); 
                 setLinkTarget(user, link, arr[0], linkName); 
                 res.json( whole );
@@ -46,7 +45,8 @@ function appendItem(req, res) {
         findThroughPath( uri, function(arr, origin) {
             loadTextObject( text, function( text ) {
                 var last = arr.length-1;
-                arr[last-1] = manager.addObjToObj(text, arr[last-1], parseInt(origin[last], 10) + 1);    
+                //arr[last-1] = manager.addObjToObj(text, arr[last-1], parseInt(origin[last], 10) + 1);   
+                arr[last-1].addToList( text, parseInt(origin[last], 10) + 1);
                 var whole = prepareResponseObjectArray( arr, origin, last-2 ); 
                 setLinkTarget(user, link, arr[0], linkName); 
                 res.json( whole );
@@ -60,10 +60,11 @@ function insertItem(req, res) {
     var text = req.query.text; 
     loadObject( req, function( user, link, obj, userName, linkName ) {
         findThroughPath( uri, function(arr, origin) {
-            loadTextObject( text, function( text ) {           
-                var last = arr.length -1;
-                arr[last] = manager.addObjToObj(text, arr[last], 0);        
-                var whole = prepareResponseObjectArray( arr, origin, last-1 ); 
+            loadTextObject( text, function( text ) {         
+                var last = arr.length - 1;
+                //arr[last] = manager.addObjToObj(text, arr[last], 0);  
+                arr[last-1].addToList( text, origin[last] );
+                var whole = prepareResponseObjectArray( arr, origin, last-2 ); 
                 setLinkTarget(user, link, arr[0], linkName); 
                 res.json( whole );
             });
@@ -158,7 +159,7 @@ function prepareResponseObjectArray( arr, origin, pos ) {
         objects : {},
     };
     for (i = pos; i>=0; --i) {
-        arr[i] = arr[i].listReplace(origin[i+1], arr[i+1].hash());                        
+        arr[i].listReplace(origin[i+1], arr[i+1].hash());                        
     }
     for (i = 0; i < arr.length; ++i ) {
         whole.objects[arr[i].hash()] = arr[i];

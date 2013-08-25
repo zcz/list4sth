@@ -34,8 +34,8 @@ $(function() {
         
         $.refreshCalender();
         
-        $("#beginningForm").attr("action", linkName + "/insert/" + objectHash)[0].reset();
-        $("#endingForm").attr("action", linkName + "/append/" + prepareChildId(objectHash, -2))[0].reset();
+        $("#beginningForm").attr("action", linkName + "/insert/" + prepareChildId(objectHash, 0))[0].reset();
+        $("#endingForm").attr("action", linkName + "/insert/" + prepareChildId(objectHash, -1))[0].reset();
         
         waitingList = {};
         $("#expList").attr("hash", objectHash);
@@ -92,7 +92,7 @@ $(function() {
         var editUri = linkName + "/edit/" + uri;
         var removeUri = linkName + "/remove/" + uri;
         var appendUri = linkName + "/append/" + uri;
-        var insertUri = linkName + "/insert/" + uri;
+        var insertUri = linkName + "/insert/" + prepareChildId( uri, 0 );
         var s = 
             "<div>"+
                 "<span style='padding-right:10px' class='textEntry'>" + text + "</span>" +
@@ -117,7 +117,7 @@ $(function() {
         $(holder).find(".optionalEntry").hide();
         $(holder).find(".editEntry").hover( function(){
             $(this).parent().find(".optionalEntry").show();
-        }, 
+        },
         function() {
             // never hide
             //if (holder.visitted !== true){

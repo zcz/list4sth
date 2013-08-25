@@ -22,6 +22,7 @@
         initFlag = true;
         $("div#wrap").prepend('<div id="calendar"></div>');
         $("div#treeBlock").addClass("limitWidth_420");
+        $("#endingForm").hide();
         
         $('#calendar').fullCalendar({
             header: {
