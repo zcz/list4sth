@@ -13,7 +13,7 @@ function showLink(req, res){
             objectHash : obj.hash(), 
             linkName : encodeURIComponent(linkName),
         }); 
-    });
+    }, res);
 }
 
 
@@ -108,13 +108,23 @@ function loadTextObject( text, callback ) {
     }
 }
 
-function loadObject(req, callback) {
+function loadObject(req, callback, res) {
     var userName = req.params.userName;
     var linkName = decodeURIComponent(req.params.linkName);
+    var hash = /([a-f0-9]{40})/g;
 
     // get user
     dao.getUserByName( userName, function( user ) {
         var linkHash = user.getLinks()[linkName];
+        
+        //error handle for link not existed case
+        if (hash.test(linkHash) === false) {
+            var s = "link not found, [link:"+linkName+ "], [user:"+userName+"]";
+            res.send(s);
+            console.log("link error: " + s);
+            return;
+        }
+        
         //get link
         dao.getObjectByHash( linkHash, function( link ) {
             var linkTargetHash = link.getTarget();
