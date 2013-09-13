@@ -24,6 +24,11 @@ app.use(express.methodOverride());
 app.use(express.cookieParser('Authentication Tutorial '));
 app.use(express.session());
 
+
+app.use(app.router);
+app.use(express.static(path.join(__dirname, 'public')));
+
+// for authentication ------------------------------------------
 var auth = express.basicAuth(function(user, pass) {
     
     var userList = {
@@ -54,10 +59,7 @@ var authAdmin = express.basicAuth(function(user, pass) {
         return false;
     }    
 });
-
-
-app.use(app.router);
-app.use(express.static(path.join(__dirname, 'public')));
+// end of authentication ----------------------------------------------
 
 //app.use(function(err, req, res, next){  // error handle
 //  console.error(err.stack);
@@ -70,57 +72,13 @@ if ('development' == app.get('env')) {
 }
 
 
-// authentication functions
-// based on http://danialk.github.io/blog/2013/02/20/simple-authentication-in-nodejs/
-/*
-function authenticate(name, pass, fn) {
-    if (!module.parent) console.log('authenticating %s:%s', name, pass);
-
-    var userList = {
-        zcz     : "ca7c1c3117df370a8c6cbc1f06d8f247",
-        pengyun : "6744ecb5cc4257098c1867ce48c72f75", // default password
-    };
-
-    if (userList[name] !== undefined) {
-        if ( utility.md5(name+"_"+pass) === userList[name] ) {
-            return fn(null, name);
-        } else {
-            return fn(new Error('invalid password'));
-        }
-    } else {
-        return fn(new Error('cannot find user'));
-    };
-}
-
-function __authenFn(req, res, err, user) {
-    if (user) {
-        req.session.regenerate(function () {
-            req.session.user = user;
-            //req.session.success = 'Authenticated as ' + user.username + ' click to <a href="/logout">logout</a>. ' + ' You may now access <a href="/restricted">/restricted</a>.';
-            res.redirect('/me/'+user);
-        });
-    } else {
-        //req.session.error = 'Authentication failed, please check your ' + ' username and password.';
-        res.send('login error');
-    }
-}
-
-function requiredAuthentication(req, res, next) {
-    if (req.session.user) {
-        next();
-    } else {
-        //req.session.error = 'Access denied!';
-        res.redirect('login error');
-    }
-}*/
-
 app.get(/^\/JSON\/([a-f0-9]{40})$/, JSONController.getJSON);                    //e.g. /JSON/24c64397de58751168bda5e769f9343ee255a9cf
 
 app.get("/", auth, function(req, res) {
     res.redirect('/me/'+req.user);
 });                                                           //e.g. "/"
 app.get("/me/:userName", [auth, accessOwnLimit], userController.showOneUser);                     //e.g. "/me/zcz"
-app.get("/me/:userName/:linkName", auth, linkController.showLink);              //e.g. "/me/zcz/todo"
+app.get("/me/:userName/:linkName", [auth, accessOwnLimit], linkController.showLink);              //e.g. "/me/zcz/todo"
 
 app.get("/me/:userName/:linkName/remove/*", [auth, accessOwnLimit], linkController.removeItem );  //e.g. /todo/remove/24c64397de58751168bda5e769f9343ee255a9cf_1_2_3
 app.get("/me/:userName/:linkName/append/*", [auth, accessOwnLimit], linkController.appendItem );  //e.g. /todo/append/24c64397de58751168bda5e769f9343ee255a9cf_1_2_3
@@ -133,3 +91,6 @@ app.get("/admin", authAdmin, userController.showAllUser);                       
 http.createServer(app).listen(app.get('port'), function(){
   console.log('Express server listening on port ' + app.get('port'));
 });
+
+
+
